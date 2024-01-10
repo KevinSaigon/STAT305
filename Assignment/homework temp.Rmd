@@ -1,0 +1,205 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+## Webwork 4
+
+# Problem 1
+```{r}
+r <- c(3,4,0,1,3,0,0,0,1,3)
+a <- 10+ 4.04
+b <- sum(r) + 8.9
+
+#a)
+answer_1a <- pbeta(0.4, shape1 = a, shape2 =b, lower.tail = TRUE)
+print(round(answer_1a, 3))
+
+#b)
+answer_1b <- a/(a+b)
+print(round(answer_1b, 3))
+
+#c)
+answer_1c <- (a*b)/((a+b)^2*(a+b+1))
+print(round(answer_1c, 3))
+```
+
+# Problem 2
+```{r}
+#a)
+y <- c(132,136,106,133,129,144,135,136,132,148,131,115,128,136,158,121,140,134,130,138)
+alpha = 265.4 + sum(y)
+beta = 20.5
+lower_a <- qgamma(0.025, shape = alpha, scale = 1/beta, lower.tail = TRUE)
+upper_a <- qgamma(0.975, shape = alpha, scale = 1/beta, lower.tail = TRUE)
+
+# print(round(lower_a,2))
+# print(round(upper_a,2))
+
+#b)
+lower_b <- qgamma(0.025, shape = sum(y), scale = 1/20)
+upper_b <- qgamma(0.975, shape = sum(y), scale = 1/20)
+
+print(round(lower_b, 2))
+print(round(upper_b, 2))
+
+```
+
+# Problem 3
+```{r}
+#a)
+t = 0.5
+m = 41.2
+s = 19.32
+v = 10/5
+y_bar = 42.63
+
+mu_a = (t*m + 50*y_bar/s^2)/(t+50/s^2)
+var_a = (t + 50/s^2)^(-1)
+sd_a = (sqrt(var_a))
+
+answer_3a = mu_a
+print(round(answer_3a, 2))
+
+#b)
+answer_3b = 1-pnorm(45, mu_a, sd_a)
+print(round(answer_3b, 2))
+
+#c)
+alpha = 0.7 + 25
+beta = 9.4 + (49*s^2)/2
+answer_3c <- pgamma(0.005, shape = alpha, scale = 1/beta)
+print(round(answer_3c, 2))
+
+```
+```{r}
+observed <- c(3, 47, 5, 45, 17, 33)
+a <- 1/18 * 150
+b <- 5/18 *150
+expected <- c(a, b, a, b, a, b)
+
+wilks <- 2 * sum(observed * log(observed / expected))
+
+print(wilks) # yields 15.85977
+
+```
+```{r}
+control = c(98.6, 265.2, 306.4, 216.6, 72.3, 168.3, 52.5, 226.2, 221.3, 143, 44.1, 292.3, 108.4, 269.6, 200, 231, 297.2, 145.3, 157.4, 296.5, 231.4, 107.9, 225.5, 259.7, 216.5, 109.1)
+# print(length(control))
+
+treatment = c(119.2, 287, 340.3, 245.1, 111.6, 206, 95.2, 256.4, 264.8, 169.1, 77.8, 339.2, 136.7, 322.1, 232, 262.9, 319.6, 170, 182.8, 321.1, 264.8, 155.9, 238.2, 278.2, 262.2, 124.4)
+# print(length(treatment))
+
+q2a <- mean(treatment - control)
+print(q2a)
+
+print(11.1/sqrt(26))
+
+q2c <- sd(treatment - control)
+print(q2c /sqrt(26))
+
+
+delta_hat <- q2a
+se <- q2c/sqrt(26)
+
+lower <- delta_hat - qt(0.975, 25) * se
+upper <- delta_hat + qt(0.975, 25) * se
+
+ci <- c(lower, upper)
+ci
+
+test_stat <- (delta_hat - 0) / se
+p_val <- pt(test_stat, 25, lower.tail = FALSE)
+p_val
+
+ttest <- t.test(treatment, control, alternative = "greater", paired= TRUE, conf.level = 0.975)
+ttest$p.value
+ttest$conf.int
+ttest$statistic
+```
+```{r}
+size <- c(818, 2654, 5699, 14156, 3380, 1326, 847)
+observed <- c(86, 219, 408, 892, 227, 119, 91)
+
+prob = sum(observed)/sum(size)
+print(prob)
+expected <- size * prob
+# print(observed)
+# print(expected)
+
+q3d_wilks <- 2 * sum(observed * log(observed / expected))
+q3d_pearson <- sum( (observed - expected)^2 / expected)
+# print(q3d_wilks)
+# print(q3d_pearson)
+
+size <- c(818,2654,5699,14156,3380,1326,847)
+x <- c(86,219,408,892,227,119,91)
+sodium <- matrix(c(size-x, x), byrow = TRUE, nrow = 2)
+sodium
+chisqtest <- chisq.test(sodium)
+chisqtest$statistic
+chisqtest$expected
+
+```
+
+```{r}
+#Webwork 6 Question 4
+observed <- c(5, 35, 25, 86, 18, 36, 23, 10)
+mle <- c(40/238, 40/238, (25+86)/238, (25+86)/238, (18+36)/238, (18+36)/238, (23+10)/238, (23+10)/238)
+old <- 71
+new <- 167
+total_row <- c(old, new, old, new, old, new, old, new)
+expected <- mle * total_row
+wilks1 <- 2 * sum(observed * log(observed / expected))
+print(wilks1)
+q4c_pearson <- sum( (observed - expected)^2 / expected)
+# print(q4c_pearson)
+
+
+## according to key
+x1 <- c(5, 25, 18, 23)
+x2 <- c(35, 86, 36, 10)
+tab <- as.table(rbind(t(x1), t(x2)))
+chisqtest <- chisq.test(tab)
+# chisqtest$statistic
+expected2 <- chisqtest$expected
+observed2 <- chisqtest$observed
+chisqtest$parameter
+
+wilks <- 2 * sum(observed2 * log(observed2 / expected2))
+wilks
+```
+```{r}
+observed <- c(1528, 106, 117, 381)
+expected <- c(1199.25, 399.75, 399.75, 133.25)
+wilks <- 2 * sum(observed * log(observed / expected))
+pearson <- sum( (observed - expected)^2 / expected)
+
+wilks
+pearson
+```
+
+```{r}
+# Example
+x = c(1.5, 0.7)
+y = c(0.0001124, 0.081625)
+
+temp <- sum(x^7 * y)
+exp(5.4420) * temp
+
+
+beta_hat = 5.44420
+se = 0.7078834014
+
+upper = beta_hat + qnorm(0.9) * se
+lower = beta_hat - qnorm(0.9) * se
+
+upper
+lower
+
+a <- c(0.41, 0.47, 0.04, 0.08)
+b <- c(0.52, 0.42, 0.03, 0.03)
+
+prod(a) < prod(b)
+```
+

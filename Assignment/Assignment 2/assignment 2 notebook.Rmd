@@ -1,0 +1,49 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+library(tidyverse)
+require("stats4")
+```
+
+```{r}
+voltage_data <- read_csv("voltage_spikes.csv")
+n_new <- nrow(voltage_data)
+x <- voltage_data$overvoltage
+head(x)
+print(length(x))
+
+```
+
+
+```{r}
+
+
+negativeLogLikelihood <- function(alpha) {
+  sumTing <- n_new*log(alpha) + (alpha-1)*sum(log(x)) - sum(x^alpha)
+  return(-sumTing)
+}
+# 
+
+curve(negativeLogLikelihood, 0, 10)
+
+fit <- mle((negativeLogLikelihood), start = list(alpha = 1), method = "L-BFGS-B")
+print(summary(fit))
+
+
+sd = 0.1762217
+alpha_hat = 1.194001
+
+lower = alpha_hat  - qnorm(0.95) * sd
+upper = alpha_hat + qnorm(0.95) * sd
+
+print(lower)
+print(upper)
+```
+
